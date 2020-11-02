@@ -1,15 +1,18 @@
+/*This cpp source file is written in UTF-8 encoding,
+ *But compiling in GBK encoding is better.*/
+
 #include <iostream>
 #include <cstring>
 #include<algorithm>
 
 using namespace std;
 
-int work, machine;//¼ÇÂ¼¹¤×÷Á¿¡¢»úÆ÷ÊıÁ¿
-int totalSteps = 0, minTime = 9999;//¼ÇÂ¼×Ü²½Êı¡¢×î¶ÌÊ±¼ä
-int stepsForWorks[99];//¶ÔÓ¦Ã¿¸ö¹¤×÷ĞèÒª¼¸²½À´Íê³É
-int jobSteps[99];//¹¤×÷ÒÑ¾­Íê³ÉµÄ²½Êı
-int designated[99][99];//×îÖÕ·ÖÅäµÄ½á¹û
-int machineWorkTime[99];//Ã¿¸ö»úÆ÷µÄ¹¤×÷Ê±¼ä
+int work, machine;//è®°å½•å·¥ä½œé‡ã€æœºå™¨æ•°é‡
+int totalSteps = 0, minTime = 9999;//è®°å½•æ€»æ­¥æ•°ã€æœ€çŸ­æ—¶é—´
+int stepsForWorks[99];//å¯¹åº”æ¯ä¸ªå·¥ä½œéœ€è¦å‡ æ­¥æ¥å®Œæˆ
+int jobSteps[99];//å·¥ä½œå·²ç»å®Œæˆçš„æ­¥æ•°
+int designated[99][99];//æœ€ç»ˆåˆ†é…çš„ç»“æœ
+int machineWorkTime[99];//æ¯ä¸ªæœºå™¨çš„å·¥ä½œæ—¶é—´
 
 struct Job {
     int whichMachine;
@@ -24,21 +27,21 @@ struct Recorder {
 
 
 void search(int step, int time) {
-    if (time > minTime)//´ËÊ±´«ÈëÊ±¼ä³¤ÓÚ×î¶ÌÊ±¼ä£¬Ã»ÓĞËÑË÷µÄ±ØÒª
+    if (time > minTime)//æ­¤æ—¶ä¼ å…¥æ—¶é—´é•¿äºæœ€çŸ­æ—¶é—´ï¼Œæ²¡æœ‰æœç´¢çš„å¿…è¦
         return;
-    if (step == totalSteps) {//µ±Ç°×îºÃ×´¿ö¶ÔÓ¦µÄÇé¿ö
+    if (step == totalSteps) {//å½“å‰æœ€å¥½çŠ¶å†µå¯¹åº”çš„æƒ…å†µ
         minTime = time;
         for (int i = 0; i < totalSteps; ++i)
             best[i] = current[i];
         return;
     }
     for (int i = 0; i < work; ++i) {
-        int j = jobSteps[i];//»ñÈ¡Õâ¸ö¹¤×÷ÒÑ¾­Íê³ÉµÄ²½Êı
-        if (j >= stepsForWorks[i])//ÒÑÍê³ÉµÄ±ÈĞèÒªµÄ»¹¶à£¬²»ÓÃÔÙËÑË÷ÁË
+        int j = jobSteps[i];//è·å–è¿™ä¸ªå·¥ä½œå·²ç»å®Œæˆçš„æ­¥æ•°
+        if (j >= stepsForWorks[i])//å·²å®Œæˆçš„æ¯”éœ€è¦çš„è¿˜å¤šï¼Œä¸ç”¨å†æœç´¢äº†
             continue;
         int thisMachine = job[i][j].whichMachine;
         current[step].whichMachine = thisMachine;
-        current[step].jobNum = i + 1;//
+        current[step].jobNum = i + 1;//æ ‡è®°æ‰§è¡Œå½“å‰å·¥ä½œçš„æœºå™¨
         int temp = machineWorkTime[thisMachine];
         int beginTime = max(designated[i][j - 1], machineWorkTime[thisMachine]);
         current[step].start = beginTime;
@@ -53,37 +56,37 @@ void search(int step, int time) {
 
 
 int main() {
-    cout << "ÇëÊäÈë¹¤×÷ÊıÁ¿£º";
+    cout << "è¯·è¾“å…¥å·¥ä½œæ•°é‡ï¼š";
     cin >> work;
-    cout << "ÇëÊäÈë»úÆ÷ÊıÁ¿£º";
+    cout << "è¯·è¾“å…¥æœºå™¨æ•°é‡ï¼š";
     cin >> machine;
 
-    //³õÊ¼»¯ËùÓĞÊı×é±äÁ¿
+    //åˆå§‹åŒ–æ‰€æœ‰æ•°ç»„å˜é‡
     memset(stepsForWorks, 0, sizeof(stepsForWorks));
     memset(machineWorkTime, 0, sizeof(machineWorkTime));
     memset(best, 0, sizeof(best));
     memset(designated, -1, sizeof(designated));
 
-    //ÓÃ»§ÊäÈë¹¤×÷ÊıÁ¿¡¢»úÆ÷ÊıÁ¿¡¢Ã¿Ò»²½¶ÔÓ¦µÄĞÅÏ¢
+    //ç”¨æˆ·è¾“å…¥å·¥ä½œæ•°é‡ã€æœºå™¨æ•°é‡ã€æ¯ä¸€æ­¥å¯¹åº”çš„ä¿¡æ¯
     for (int i = 0; i < work; ++i) {
-        cout << "µÚ" << i + 1 << "Ïî¹¤×÷ĞèÒª¼¸²½£º";
+        cout << "ç¬¬" << i + 1 << "é¡¹å·¥ä½œéœ€è¦å‡ æ­¥ï¼š";
         cin >> stepsForWorks[i];
         totalSteps += stepsForWorks[i];
         for (int j = 0; j < stepsForWorks[i]; ++j) {
-            cout << "¶ÔµÚ" << i + 1 << "Ïî¹¤×÷¶øÑÔ£¬µÚ" << j + 1 << "²½ĞèÒªÔÚÄÄÌ¨»úÆ÷ÉÏÔËĞĞ£¿ĞèÒª¶àÉÙÊ±¼ä£¿";
+            cout << "å¯¹ç¬¬" << i + 1 << "é¡¹å·¥ä½œè€Œè¨€ï¼Œç¬¬" << j + 1 << "æ­¥éœ€è¦åœ¨å“ªå°æœºå™¨ä¸Šè¿è¡Œï¼Ÿéœ€è¦å¤šå°‘æ—¶é—´ï¼Ÿ";
             cin >> job[i][j].whichMachine >> job[i][j].time;
         }
     }
-    cout << "ÕıÔÚ¼ÆËã£¬ÇëÉÔºó..." << endl;
+    cout << "æ­£åœ¨è®¡ç®—ï¼Œè¯·ç¨å..." << endl;
 
-    search(0, 0);//Ñ°ÕÒ×îÓÅ½â
-    cout << "ĞèÒªµÄ×î¶ÌÊ±¼ä£º" << minTime << endl;//Êä³ö×î¶ÌÊ±¼ä
-    int gantt[99][99];//»­³ö¸ÊÌØÍ¼
+    search(0, 0);//å¯»æ‰¾æœ€ä¼˜è§£
+    cout << "éœ€è¦çš„æœ€çŸ­æ—¶é—´ï¼š" << minTime << endl;//è¾“å‡ºæœ€çŸ­æ—¶é—´
+    int gantt[99][99];//ç”»å‡ºç”˜ç‰¹å›¾
     for (int i = 0; i < totalSteps; i++)
         for (int j = best[i].start; j < best[i].end; j++)
-            gantt[best[i].whichMachine][j] = best[i].jobNum;//½«¸ÊÌØÍ¼µÄÊı×é´æÈë×îÓÅ½â
+            gantt[best[i].whichMachine][j] = best[i].jobNum;//å°†ç”˜ç‰¹å›¾çš„æ•°ç»„å­˜å…¥æœ€ä¼˜è§£
     for (int i = 0; i < machine; i++) {
-        cout << "»úÆ÷" << i + 1 << "£º";
+        cout << "æœºå™¨" << i + 1 << "ï¼š";
         for (int j = 0; j < minTime; j++)
             printf("%d%c", gantt[i][j], j == minTime - 1 ? '\n' : ' ');
     }
